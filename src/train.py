@@ -2,46 +2,94 @@ from sklearn import ensemble
 import sys
 import pandas as pd
 import numpy as np
-from . import dispatcher
+import dispatcher
 from sklearn import metrics
+from sklearn import model_selection
+import os
 
-FOLD = int(sys.argv[1])
-NUM_TREES = int(sys.argv[2])
-MODEL = sys.argv[3]
+# FOLD = int(sys.argv[1])
+# NUM_TREES = int(sys.argv[2])
+MODEL = "RF"
 
-FOLD_MAPPING = {
-    0: [1, 2, 3, 4],
-    1: [0, 2, 3, 4],
-    2: [0, 1, 3, 4],
-    3: [0, 1, 2, 4],
-    4: [0, 1, 2, 3]
-}
+model = dispatcher.MODELS[MODEL]
+params_dict = dispatcher.PARAMS_DICT[MODEL]
 
-if __name__ == "__main__":
+# FOLD_MAPPING = {
+#     0: [1, 2, 3, 4],
+#     1: [0, 2, 3, 4],
+#     2: [0, 1, 3, 4],
+#     3: [0, 1, 2, 4],
+#     4: [0, 1, 2, 3]
+# }
 
+def import_data():
+    os.chdir("..")
     df = pd.read_csv("input/train_folds.csv")
-    df.drop('duration', axis=1, inplace=True)
-    
     df['target'] = np.where(df.y == "yes", 1, 0)
     df.drop('y', axis=1, inplace=True)
-    df = pd.get_dummies(df)
+    return(df)
 
-    train_df = df[df.kfold.isin(FOLD_MAPPING.get(FOLD))]
-    valid_df = df[df['kfold'] == FOLD]
+class SearchBestParameters():
+    '''
+    Only works for binary classifiers right now
 
-    ytrain = train_df['target']
-    train_df.drop('target', axis=1, inplace=True)
+    Input: df, target, model name, parameter list for gridsearch
+    Output: best cv score, best params
+    '''
+    def __init__(self, df, target_name, model, param_dict, use_fold_column):
 
-    yvalid = valid_df['target']
-    valid_df.drop('target', axis=1, inplace=True)
+        self._df = df
+        self._target_name = target_name
+        self._model = model
+        self._param_dict = param_dict
+        self._use_fold_column = use_fold_column
 
-    # train the model
-    model = dispatcher.MODELS[MODEL]
-    model.fit(train_df, ytrain)
-    preds = model.predict(valid_df)
+        self._data_preprocessed = False
 
-    # print metric
-    print(metrics.roc_auc_score(yvalid, preds))
+        self._df_preprocessed = None
+        self._results_dict = None
+        self._results_df = None
+
+        # Class invariants
+        if not isinstance(self._df, pd.DataFrame):
+            raise ValueError("First arguement should be a pandas dataframe")
+
+        
+
+    def _data_preprocessing(self):
+        '''
+        Manipulates the features of the object and returns a new copy
+        As of now we are only dropping 1 feature - duration
+        '''
+        if not self._data_preprocessed:
+            
+            if self._use_fold_column == False:
+                self._df.drop('kfold', axis=1, inplace=True)
+            
+            self._df.drop('duration', axis=1, inplace=True)
+            self._df = pd.get_dummies(self._df)
+
+            self._data_preprocessed = True
+
+            print(self._df.shape)
+            return(self._df)
+
+    def _grid_search(self):
+        
+        self._df_preprocessed = self._data_preprocessing()
+
+        if not isinstance(self._df_preprocessed, pd.DataFrame):
+            print("PreProcessing false")
+            print(f"Type of df_preprocessed is {type(self._df_preprocessed)}")
+
+        y_train = self._df_preprocessed[self._target_name]
+        X_train = self._df_preprocessed.drop(self._target_name, axis=1)
+
+        clf = model_selection.GridSearchCV(self._model, self._param_dict, cv=model_selection.StratifiedKFold()).fit(X_train, y_train)
+        print(best_score_)
+        print(best_params_)
+
+
 
 
 
