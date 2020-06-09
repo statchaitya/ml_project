@@ -2,17 +2,16 @@ from sklearn import ensemble
 import sys
 import pandas as pd
 import numpy as np
-import parameters
+# import parameters
 from sklearn import metrics
 from sklearn import model_selection
 import os
 
-# FOLD = int(sys.argv[1])
-# NUM_TREES = int(sys.argv[2])
-MODEL = "RF"
 
-model = parameters.MODELS[MODEL]
-params_dict = parameters.PARAMS_DICT[MODEL]
+# MODEL = "RF"
+
+# model = parameters.MODELS[MODEL]
+# params_dict = parameters.PARAMS_DICT[MODEL]
 
 # FOLD_MAPPING = {
 #     0: [1, 2, 3, 4],
@@ -91,11 +90,13 @@ class SearchBestParameters():
         y_train = self._df_preprocessed[self._target_name]
         X_train = self._df_preprocessed.drop(self._target_name, axis=1)
 
-        clf = model_selection.GridSearchCV(self._model, self._param_dict, cv=model_selection.StratifiedKFold(n_splits=self._cv), scoring='roc_auc').fit(X_train, y_train)
-        
-        results_df = pd.DataFrame(clf.cv_results_)
         results_string = "_".join([self._MODEL, "CV", str(self._cv)])
-        results_df.to_csv(os.path.join("cv_output", results_string+".csv"))
+        if not os.path.exists(os.path.join("cv_output", results_string+".csv")):
+            clf = model_selection.GridSearchCV(self._model, self._param_dict, cv=model_selection.StratifiedKFold(n_splits=self._cv), scoring='roc_auc').fit(X_train, y_train)
+            results_df = pd.DataFrame(clf.cv_results_)
+            results_df.to_csv(os.path.join("cv_output", results_string+".csv"))
+        else:
+            raise Exception("Cross validation already complete for these set of inputs, params and model")
 
 
 

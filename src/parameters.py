@@ -8,6 +8,9 @@ MODELS = {
 
 PARAMS_DICT = {
     "RF": {'n_estimators': [200, 400, 700, 1000],
-    "max_depth": [2, 4, 6, 8, 10, 12],
-    "max_features": [0.3, 0.4, 0.5, 0.6]}
+            "max_depth": [2, 4, 6, 8, 10, 12],
+            "max_features": [0.3, 0.4, 0.5, 0.6]},
+    "ET": {'n_estimators': [200, 400, 600, 800],
+            'max_depth': [4, 6, 8, 10, 12],
+            'max_features': [0.3, 0.4, 0.5, 0.6, 0.7]}
 }
