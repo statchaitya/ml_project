@@ -7,7 +7,7 @@ MODELS = {
 }
 
 PARAMS_DICT = {
-    "RF": {'n_estimators': [100, 300, 500],
-    "max_depth": [2, 5, 8, 11],
+    "RF": {'n_estimators': [200, 400, 700, 1000],
+    "max_depth": [2, 4, 6, 8, 10, 12],
     "max_features": [0.3, 0.4, 0.5, 0.6]}
 }

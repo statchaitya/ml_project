@@ -1,6 +1,6 @@
-import train
+import cross_validate
 
-df = train.import_data()
+df = cross_validate.import_data()
 
-search_rf_best_params = train.SearchBestParameters(df, 'target', train.model, train.params_dict, use_fold_column=False)
+search_rf_best_params = cross_validate.SearchBestParameters(df, 'target', cross_validate.MODEL, cross_validate.model, cross_validate.params_dict, cv=10, use_fold_column=False)
 search_rf_best_params._grid_search()
