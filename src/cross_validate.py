@@ -2,24 +2,10 @@ from sklearn import ensemble
 import sys
 import pandas as pd
 import numpy as np
-# import parameters
 from sklearn import metrics
 from sklearn import model_selection
 import os
 
-
-# MODEL = "RF"
-
-# model = parameters.MODELS[MODEL]
-# params_dict = parameters.PARAMS_DICT[MODEL]
-
-# FOLD_MAPPING = {
-#     0: [1, 2, 3, 4],
-#     1: [0, 2, 3, 4],
-#     2: [0, 1, 3, 4],
-#     3: [0, 1, 2, 4],
-#     4: [0, 1, 2, 3]
-# }
 
 def import_data(project_home_path):
     '''

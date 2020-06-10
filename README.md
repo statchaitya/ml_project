@@ -1,4 +1,4 @@
-# How likely is a customer to buy a financial product?
+# General ML Framework for automated hyperparameter tuning, giving the best models for any dataset (currently only supports binary target)
 
 Creating a complete end to end ML framework to solve binary classification problems.
 
