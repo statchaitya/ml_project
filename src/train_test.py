@@ -2,7 +2,7 @@ import os
 from sklearn import ensemble
 import parameters
 from cross_validate import import_data, import_test, data_pre_processing
-from utils import getBestParams, getWorstParams
+from utils import getBestParams, getWorstParams, evaluateMetrics
 
 project_home = "C:/DataScience/Github/ml_project"
 
@@ -49,8 +49,9 @@ for model in model_keys:
     rf_worst.set_params(**worst_params[model])
     rf_worst.fit(train, train_y)
     test_results_worst[model]['predicted'] = rf_worst.predict(test)
-    test_results_best[model]['predicted_proba'] = rf_best.predict_proba(test)
+    test_results_worst[model]['predicted_proba'] = rf_worst.predict_proba(test)
     test_results_worst[model]['actual'] = test_y
 
 
-
+eval_results = evaluateMetrics(test_results_best, test_results_worst)
+eval_results.to_csv(os.path.join(project_home, "cv_output", "results_df.csv"), index=False)
