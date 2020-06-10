@@ -21,15 +21,33 @@ import os
 #     4: [0, 1, 2, 3]
 # }
 
-def import_data():
+def import_data(project_home_path):
     '''
     Imports data and does a few manipulations
     * function - i.e. function which needs to be modified a bit when dataset changes
     '''
-    os.chdir("..")
-    df = pd.read_csv("input/train_folds.csv")
+    df = pd.read_csv(os.path.join(project_home_path, "input/train_folds.csv"))
     df['target'] = np.where(df.y == "yes", 1, 0)
     df.drop('y', axis=1, inplace=True)
+    return(df)
+
+def import_test(project_home_path):
+    '''
+    Imports test data
+    * function
+    '''
+    test = pd.read_csv(os.path.join(project_home_path, "input/test.csv"))
+    test['target'] = np.where(test.y == 'yes', 1, 0)
+    test.drop('y', axis=1, inplace=True)
+    return(test)
+
+def data_pre_processing(df):
+    '''
+    Preprocessing for train and test sets
+    Removal of columns, imputing missing values etc..
+    '''
+    df.drop('kfold', axis=1, inplace=True)
+    df = pd.get_dummies(df)
     return(df)
 
 class SearchBestParameters():
